@@ -5,56 +5,23 @@ import { observer } from 'mobx-react-lite';
 import { useStores } from 'stores';
 import * as styles from './styles.styl';
 import { TOKEN } from 'stores/interfaces';
-import cn from 'classnames';
-import { Text, Title } from 'components/Base';
+import { Button, Text, Title } from 'components/Base';
 import { WalletBalances } from './WalletBalances';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { MintTokens } from '../MintTokens';
 
-const LargeButton = (props: {
-  title: string;
-  onClick: () => void;
-  description: string;
-  isActive: boolean;
-  reverse?: boolean;
-}) => {
-  return (
-    <Box
-      direction="column"
-      align="center"
-      justify="center"
-      className={cn(
-        styles.largeButtonContainer,
-        props.isActive ? styles.active : '',
-      )}
-      onClick={props.onClick}
-      gap="10px"
-    >
-      <Box direction={props.reverse ? 'row-reverse' : 'row'} align="center">
-        <Box direction="row" align="center">
-          <img className={styles.imgToken} src="/eth.svg" />
-          <Text size="large" className={styles.title}>
-            ETH
-          </Text>
-        </Box>
-        <Box direction="row" margin={{ horizontal: 'medium' }} align="center">
-          <img src="/right.svg" />
-        </Box>
-        <Box direction="row" align="center">
-          <img className={styles.imgToken} src="/one.svg" />
-          <Text size="large" className={styles.title}>
-            ONE
-          </Text>
-        </Box>
-      </Box>
-      <Text size="xsmall" color="#748695" className={styles.description}>
-        {props.description}
-      </Text>
-    </Box>
-  );
-};
+enum ACTION_MODE {
+  MINT = 'MINT',
+  NONE = 'NONE',
+  BURN = 'BURN',
+  TRANSFER = 'TRANSFER',
+  UNISWAP = 'UNISWAP',
+}
 
 export const EthBridge = observer((props: any) => {
   const { user, exchange, routing } = useStores();
+
+  const [mode, setMode] = useState<ACTION_MODE>(ACTION_MODE.MINT);
 
   useEffect(() => {
     if (props.match.params.token) {
@@ -71,65 +38,74 @@ export const EthBridge = observer((props: any) => {
     }
   }, []);
 
+  const actionModeRender = () => {
+    switch (mode) {
+      case ACTION_MODE.MINT:
+        return <MintTokens onCancel={() => setMode(ACTION_MODE.NONE)} />;
+      default:
+        return <MintTokens onCancel={() => setMode(ACTION_MODE.NONE)} />;
+    }
+  };
+
   return (
     <BaseContainer>
       <PageContainer>
-        <Box
-          direction="row"
-          fill={true}
-          justify="between"
-          align="start"
-        >
+        <Box direction="row" fill={true} justify="between" align="start">
           <Box
             direction="column"
             align="center"
             justify="center"
             className={styles.base}
           >
-            <Box
-              direction="column"
-              align="center"
-              justify="center"
-              margin={{ top: 'large' }}
-              fill={true}
-            >
-              <Title size="medium" color="BlackTxt" bold>
-                What would you like to do?
-              </Title>
-
+            {mode === ACTION_MODE.NONE ? (
               <Box
-                direction="row"
-                style={{ maxWidth: '600px' }}
-                wrap={true}
-                margin={{ top: 'medium' }}
+                direction="column"
                 align="center"
                 justify="center"
+                margin={{ top: 'large' }}
+                fill={true}
               >
-                <Box className={styles.actionItem}>
-                  <img src="/mint.svg" />
-                  <Title>MINT</Title>
-                  <Text>Mint Synths by 1HRV</Text>
-                </Box>
+                <Title size="medium" color="BlackTxt" bold>
+                  What would you like to do?
+                </Title>
 
-                <Box className={styles.actionItem}>
-                  <img src="/burn.svg" />
-                  <Title>BURN</Title>
-                  <Text>Burn Synths to unlock 1HRV</Text>
-                </Box>
+                <Box
+                  direction="row"
+                  style={{ maxWidth: '600px' }}
+                  wrap={true}
+                  margin={{ top: 'medium' }}
+                  align="center"
+                  justify="center"
+                >
+                  <Box
+                    className={styles.actionItem}
+                    onClick={() => setMode(ACTION_MODE.MINT)}
+                  >
+                    <img src="/mint.svg" />
+                    <Title>MINT</Title>
+                    <Text>Mint Synths by ONE</Text>
+                  </Box>
 
-                <Box className={styles.actionItem}>
-                  <img src="/transfer.svg" />
-                  <Title>TRANSFER</Title>
-                  <Text>Transfer 1HRV or Synths</Text>
-                </Box>
+                  <Box className={styles.actionItem}>
+                    <img src="/burn.svg" />
+                    <Title>BURN</Title>
+                    <Text>Burn Synths to unlock 1HRV</Text>
+                  </Box>
 
-                <Box className={styles.actionItem}>
-                  <img src="/uniswap.webp" />
-                  <Title>UNISWAP</Title>
-                  <Text>Get 1HRV from Uniswap</Text>
+                  <Box className={styles.actionItem}>
+                    <img src="/transfer.svg" />
+                    <Title>TRANSFER</Title>
+                    <Text>Transfer 1HRV or Synths</Text>
+                  </Box>
+
+                  <Box className={styles.actionItem}>
+                    <img src="/uniswap.webp" />
+                    <Title>UNISWAP</Title>
+                    <Text>Get 1HRV from Uniswap</Text>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
+            ) : actionModeRender()}
 
             {/*<Box*/}
             {/*  direction="row"*/}

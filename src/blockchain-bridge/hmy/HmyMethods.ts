@@ -68,7 +68,7 @@ export class HmyTokenMethods {
       .balanceOf(addrHex)
       .call(this.options);
 
-    return balance;
+    return String(balance / 1e18);
   };
 
   public sendTokens = (receiverAddress, amount) => {

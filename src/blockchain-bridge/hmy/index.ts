@@ -17,7 +17,7 @@ const mainContract = this.hmy.contracts.createContract(
   process.env.MAIN_CONTRACT_ADDRESS,
 );
 
-const tokenJson = require('../out/IERC20.json');
+const tokenJson = require('../out/BaseToken.json');
 const usdContract = this.hmy.contracts.createContract(
     tokenJson.abi,
     process.env.USD_TOKEN_ADDRESS,

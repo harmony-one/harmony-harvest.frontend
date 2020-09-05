@@ -4,8 +4,8 @@ export enum EXCHANGE_MODE {
 }
 
 export enum TOKEN {
-  BUSD = 'busd',
-  LINK = 'link',
+  BUSD = 'hUSD',
+  LINK = 'hBTC',
 }
 
 export enum ACTION_TYPE {
