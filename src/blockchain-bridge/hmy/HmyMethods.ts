@@ -1,6 +1,8 @@
 import { Harmony } from '@harmony-js/core';
 import { Contract } from '@harmony-js/contract';
-import { connectToOneWallet, ONE } from './helpers';
+import { connectToOneWallet } from './helpers';
+
+const ONE = '000000000000000000';
 
 interface IHmyMethodsInitParams {
   hmy: Harmony;
@@ -12,6 +14,7 @@ export class HmyMethods {
   private hmy: Harmony;
   private hmyManagerContract: Contract;
   private options = { gasPrice: 1000000000, gasLimit: 6721900 };
+  public governanceAddress: string;
 
   constructor(params: IHmyMethodsInitParams) {
     this.hmy = params.hmy;
@@ -20,24 +23,74 @@ export class HmyMethods {
     if (params.options) {
       this.options = params.options;
     }
+
+    this.getGovernanceAddress().then(
+      address => (this.governanceAddress = address),
+    );
   }
 
-  public lockToken = (usdToken, amount) => {
+  private createAction = (callback: () => Promise<any>): Promise<any> => {
     return new Promise(async (resolve, reject) => {
       try {
         await connectToOneWallet(this.hmyManagerContract.wallet, null, reject);
 
-        let options = { ...this.options, value: amount + ONE };
-
-        const res = await this.hmyManagerContract.methods
-          .lockToken(usdToken, amount + ONE)
-          .send(options);
+        const res = await callback();
 
         resolve(res);
       } catch (e) {
         reject(e);
       }
     });
+  };
+
+  public lockToken = (usdToken, amount): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await connectToOneWallet(this.hmyManagerContract.wallet, null, reject);
+
+        // console.log(111, usdToken, amount)
+
+        const res = await this.hmyManagerContract.methods
+          .lockToken(usdToken, amount + ONE)
+          .send(this.options);
+
+        resolve(res);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  };
+
+  public unlockToken = (usdToken, govToken, amount) => {
+    return this.createAction(() =>
+      this.hmyManagerContract.methods
+        .unlockToken(usdToken, govToken, amount + ONE)
+        .send(this.options),
+    );
+  };
+
+  public getSynth = async tokenAddress => {
+    const [
+      address,
+      exchangePrice,
+      rate,
+      gov,
+    ] = await this.hmyManagerContract.methods
+      .getSynth(tokenAddress)
+      .call(this.options);
+
+    return {
+      address,
+      gov: Boolean(Number(gov)),
+      rate: Number(rate),
+      exchangePrice: Number(exchangePrice),
+    };
+  };
+
+  public getGovernanceAddress = async () => {
+    return await this.hmyManagerContract.methods
+      .getGovernanceAddress()
+      .call(this.options);
   };
 }
 
@@ -78,6 +131,22 @@ export class HmyTokenMethods {
 
         const res = await this.tokenContract.methods
           .transfer(receiverAddress, amount + ONE)
+          .send(this.options);
+
+        resolve(res);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  };
+
+  public approveToken = (demeterAddr, amount) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await connectToOneWallet(this.tokenContract.wallet, null, reject);
+
+        let res = await this.tokenContract.methods
+          .approve(demeterAddr, amount + ONE)
           .send(this.options);
 
         resolve(res);

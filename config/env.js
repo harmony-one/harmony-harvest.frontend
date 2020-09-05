@@ -99,12 +99,13 @@ function getClientEnvironment(publicUrl) {
 
         PRIVATE_KEY: process.env.PRIVATE_KEY,
 
-        GOV_TOKEN_ADDRESS: process.env.GOV_TOKEN_ADDRESS,
+        HRV_TOKEN_ADDRESS: process.env.HRV_TOKEN_ADDRESS,
         USD_TOKEN_ADDRESS: process.env.USD_TOKEN_ADDRESS,
         BTC_TOKEN_ADDRESS: process.env.BTC_TOKEN_ADDRESS,
-        MAIN_CONTRACT_ADDRESS: process.env.MAIN_CONTRACT_ADDRESS,
+        DEMETER_CONTRACT_ADDRESS: process.env.DEMETER_CONTRACT_ADDRESS,
 
         HMY_NODE_URL: process.env.HMY_NODE_URL,
+        HMY_EXPLORER_URL: process.env.HMY_EXPLORER_URL,
         GAS_LIMIT: process.env.GAS_LIMIT,
         GAS_PRICE: process.env.GAS_PRICE,
 

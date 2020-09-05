@@ -21,7 +21,7 @@ enum ACTION_MODE {
 export const EthBridge = observer((props: any) => {
   const { user, exchange, routing } = useStores();
 
-  const [mode, setMode] = useState<ACTION_MODE>(ACTION_MODE.MINT);
+  const [mode, setMode] = useState<ACTION_MODE>(ACTION_MODE.NONE);
 
   useEffect(() => {
     if (props.match.params.token) {
@@ -83,7 +83,7 @@ export const EthBridge = observer((props: any) => {
                   >
                     <img src="/mint.svg" />
                     <Title>MINT</Title>
-                    <Text>Mint Synths by ONE</Text>
+                    <Text>Mint Synths by 1HRV</Text>
                   </Box>
 
                   <Box className={styles.actionItem}>

@@ -1,31 +1,34 @@
 import * as React from 'react';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { Box } from 'grommet';
-import { ItemToken, Spinner } from 'ui';
+import { ItemToken, Spinner, Steps } from 'ui';
 import { observer } from 'mobx-react-lite';
-import {
-  Button,
-  Icon,
-  NumberInput,
-  Text,
-  TextInput,
-  Title,
-} from 'components/Base';
+import { Button, Icon, NumberInput, Text, Title } from 'components/Base';
 import { TOKEN } from 'stores/interfaces';
 import { useStores } from 'stores';
 import { statusFetching } from '../../constants';
 import * as styles from '../Exchange/styles.styl';
 import * as stylesLocal from './styles.styl';
-import { hmyMethods } from '../../blockchain-bridge';
+import { govTokenMethods, hmyMethods } from '../../blockchain-bridge';
+import { formatWithTwoDecimals, truncateAddressString } from '../../utils';
+import { AssetRow } from '../Exchange/Details';
 
 export const MintTokens = observer((props: any) => {
   const { user } = useStores();
   const [status, setStatus] = useState<statusFetching>('init');
   const [error, setError] = useState('');
   const [token, setToken] = useState<TOKEN>(TOKEN.BUSD);
-  const [address, setAddress] = useState<string>('0');
+  const [txHash, setTxHash] = useState<string>('');
+  const [step, setStep] = useState<number>(0);
+  const [amount, setAmount] = useState<string>('0');
 
   const isPending = status === 'fetching';
+
+  const tokenInfo = token === TOKEN.BUSD ? user.usdInfo : user.btcInfo;
+
+  const willBeMinted =
+    (Number(amount) * user.govInfo.exchangePrice) /
+    (user.govInfo.rate * tokenInfo.exchangePrice);
 
   // useEffect(() => {
   //   setAddress(user.address);
@@ -51,7 +54,7 @@ export const MintTokens = observer((props: any) => {
       break;
   }
 
-  const actionHandler = () => {
+  const actionHandler = async () => {
     setStatus('fetching');
     setError('');
 
@@ -60,25 +63,42 @@ export const MintTokens = observer((props: any) => {
         ? process.env.USD_TOKEN_ADDRESS
         : process.env.BTC_TOKEN_ADDRESS;
 
-    hmyMethods
-      .lockToken(tokenAddress, address)
-      .then((res: any) => {
+    try {
+      if (Number(amount) > Number(user.govBalance)) {
+        throw new Error('Not enough balance');
+      }
 
-        if (res.status === 'called') {
-          setStatus('success');
-        } else {
-          throw new Error('Transaction rejected');
-        }
-      })
-      .catch(e => {
-        if (e.status && e.response.body) {
-          setError(e.response.body.message);
-        } else {
-          setError(e.message);
-        }
+      if (Number(amount) <= 0) {
+        throw new Error('Amount must be more than 0');
+      }
 
-        setStatus('error');
-      });
+      setStep(0);
+      let res: any = await govTokenMethods.approveToken(
+        process.env.DEMETER_CONTRACT_ADDRESS,
+        amount,
+      );
+
+      if (res.status !== 'called') throw new Error('Transaction rejected');
+
+      setTxHash(res.transactionHash || (res.transaction && res.transaction.id));
+
+      setStep(1);
+      res = await hmyMethods.lockToken(tokenAddress, amount);
+
+      setTxHash(res.transactionHash || (res.transaction && res.transaction.id));
+
+      if (res.status !== 'called') throw new Error('Transaction rejected');
+
+      setStatus('success');
+    } catch (e) {
+      if (e.status && e.response.body) {
+        setError(e.response.body.message);
+      } else {
+        setError(e.message);
+      }
+
+      setStatus('error');
+    }
   };
 
   return (
@@ -102,7 +122,7 @@ export const MintTokens = observer((props: any) => {
           <img src="/mint.svg" />
           <Title>MINT</Title>
           <Text>
-            Mint hUSD by your 1HRV or ONE. This gives you a Collateralization
+            Mint hUSD by your 1HRV tokens. This gives you a Collateralization
             Ratio and a debt, allowing you to earn staking rewards.
           </Text>
         </Box>
@@ -120,8 +140,8 @@ export const MintTokens = observer((props: any) => {
             selected={token === TOKEN.LINK}
           />
         </Box>
-        {/*<Title size="medium">Mint {token} tokens to your address</Title>*/}
 
+        {/*<Title size="medium">Mint {token} tokens to your address</Title>*/}
         {status !== 'init' ? (
           <Box
             direction="column"
@@ -132,33 +152,96 @@ export const MintTokens = observer((props: any) => {
             style={{ background: '#dedede40' }}
           >
             {icon()}
-            <Box className={styles.description} margin={{ top: 'medium' }}>
+            <Box
+              className={styles.description}
+              align="center"
+              margin={{ top: 'medium' }}
+            >
               <Text>{description}</Text>
-              {/*{exchange.txHash ? (*/}
-              {/*  <a*/}
-              {/*    style={{ marginTop: 10 }}*/}
-              {/*    href={EXPLORER_URL + `/tx/${exchange.txHash}`}*/}
-              {/*    target="_blank"*/}
-              {/*  >*/}
-              {/*    Tx id: {truncateAddressString(exchange.txHash)}*/}
-              {/*  </a>*/}
-              {/*) : null}*/}
+              {txHash ? (
+                <a
+                  style={{ marginTop: 10 }}
+                  href={process.env.HMY_EXPLORER_URL + `/tx/${txHash}`}
+                  target="_blank"
+                >
+                  {truncateAddressString(txHash)}
+                </a>
+              ) : null}
             </Box>
           </Box>
         ) : null}
 
-        <Box direction="column" align="center" gap="5px">
-          <Text>Confirm or enter amount to mint:</Text>
-          <NumberInput
-            disabled={isPending}
-            style={{ width: 400 }}
-            value={address}
-            onChange={setAddress}
+        {status === 'fetching' ? (
+          <Steps
+            steps={['Approve lock 1HRV tokens', `Mint ${token} tokens`]}
+            currentStep={step}
           />
-        </Box>
+        ) : null}
 
-        <Text>Harmony network fees: $0 / 0.000021 ONE</Text>
-        <Box direction="row" justify="center" fill={true}>
+        {status !== 'fetching' && status !== 'success' ? (
+          <Box direction="column" gap="30px" align="center">
+            <Box direction="column" fill={true} style={{ width: 400 }}>
+              <AssetRow label="Minted token" value={token} />
+              <AssetRow label="Collateralization rate" value={tokenInfo.rate} />
+              <AssetRow
+                label="Exchange price"
+                value={'$ ' + formatWithTwoDecimals(tokenInfo.exchangePrice)}
+              />
+              {/*<AssetRow*/}
+              {/*  label="Token address"*/}
+              {/*  value={truncateAddressString(tokenInfo.address)}*/}
+              {/*  address={true}*/}
+              {/*  link={tokenInfo.address}*/}
+              {/*/>*/}
+            </Box>
+
+            <Box
+              direction="column"
+              align="start"
+              gap="5px"
+              style={{ width: 400 }}
+            >
+              <Box direction="row" justify="between" fill={true}>
+                <Text>Enter 1HRV amount to lock:</Text>
+                <Text>max: {user.govBalance}</Text>
+              </Box>
+              <NumberInput
+                disabled={isPending}
+                style={{ width: 400 }}
+                value={amount}
+                onChange={setAmount}
+              />
+            </Box>
+
+            <Box direction="column" fill={true} style={{ width: 400 }}>
+              <AssetRow
+                label={`${token} will be minted`}
+                value={formatWithTwoDecimals(willBeMinted)}
+              />
+              <AssetRow label="Harmony network fee" value="0.006721 ONE" />
+            </Box>
+
+            {/*<Text>Harmony network fees: $0 / 0.006721 ONE</Text>*/}
+            <Box direction="row" justify="center" fill={true}>
+              <Button
+                transparent={true}
+                onClick={props.onCancel}
+                disabled={isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                style={{ marginLeft: 20 }}
+                onClick={actionHandler}
+                disabled={isPending}
+              >
+                Mint {token} tokens
+              </Button>
+            </Box>
+          </Box>
+        ) : null}
+
+        {status === 'success' ? (
           <Button
             transparent={true}
             onClick={props.onCancel}
@@ -166,14 +249,7 @@ export const MintTokens = observer((props: any) => {
           >
             Cancel
           </Button>
-          <Button
-            style={{ marginLeft: 20 }}
-            onClick={actionHandler}
-            disabled={isPending}
-          >
-            Mint {token} tokens
-          </Button>
-        </Box>
+        ) : null}
       </Box>
     </Box>
   );

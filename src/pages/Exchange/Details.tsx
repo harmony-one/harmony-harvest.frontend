@@ -6,7 +6,7 @@ import { useStores } from 'stores';
 import { formatWithSixDecimals, truncateAddressString } from 'utils';
 // import { EXPLORER_URL } from '../../blockchain';
 
-const AssetRow = props => {
+export const AssetRow = props => {
   return (
     <Box
       direction="row"
@@ -21,7 +21,7 @@ const AssetRow = props => {
       </Box>
       <Box direction="row" align="center">
         {props.address ? (
-          <a href={props.link}>
+          <a href={process.env.HMY_EXPLORER_URL + '/address/' + props.link} target="_blank">
             <Text
               size="small"
               style={{
@@ -42,14 +42,14 @@ const AssetRow = props => {
             {props.after}
           </Text>
         )}
-        {props.address && (
-          <Icon
-            glyph="PrintFormCopy"
-            size="20px"
-            color="#1c2a5e"
-            style={{ marginLeft: 10, width: 20 }}
-          />
-        )}
+        {/*{props.address && (*/}
+        {/*  <Icon*/}
+        {/*    glyph="PrintFormCopy"*/}
+        {/*    size="20px"*/}
+        {/*    color="#1c2a5e"*/}
+        {/*    style={{ marginLeft: 10, width: 20 }}*/}
+        {/*  />*/}
+        {/*)}*/}
       </Box>
     </Box>
   );

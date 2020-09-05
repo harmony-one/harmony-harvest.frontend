@@ -6,10 +6,18 @@ import {
   usdTokenMethods,
   btcTokenMethods,
   govTokenMethods,
+    hmyMethods
 } from '../blockchain-bridge';
 import { StoreConstructor } from './core/StoreConstructor';
 
 const defaults = {};
+
+export interface ISynth {
+  address: string;
+  gov: boolean;
+  rate: number;
+  exchangePrice: number;
+}
 
 export class UserStoreEx extends StoreConstructor {
   public stores: IStores;
@@ -29,6 +37,9 @@ export class UserStoreEx extends StoreConstructor {
   @observable public btcBalance: string = '0';
   @observable public govBalance: string = '0';
 
+  @observable public usdInfo: ISynth;
+  @observable public btcInfo: ISynth;
+  @observable public govInfo: ISynth;
 
   constructor(stores) {
     super(stores);
@@ -62,6 +73,7 @@ export class UserStoreEx extends StoreConstructor {
       this.stores.exchange.transaction.oneAddress = this.address;
 
       this.getOneBalance();
+      this.getSynthsInfo();
     }
   }
 
@@ -99,6 +111,16 @@ export class UserStoreEx extends StoreConstructor {
         console.error(e);
       }
     }
+  };
+
+  @action public getSynthsInfo = async () => {
+      try {
+        this.usdInfo = await hmyMethods.getSynth(process.env.USD_TOKEN_ADDRESS);
+        this.btcInfo = await hmyMethods.getSynth(process.env.BTC_TOKEN_ADDRESS);
+        this.govInfo = await hmyMethods.getSynth(process.env.HRV_TOKEN_ADDRESS);
+      } catch (e) {
+        console.error(e);
+      }
   };
 
   @action public getOneBalance = async () => {

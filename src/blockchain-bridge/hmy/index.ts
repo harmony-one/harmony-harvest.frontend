@@ -14,10 +14,11 @@ export const hmy = new Harmony(
 const mainJson = require('../out/Demeter.json');
 const mainContract = this.hmy.contracts.createContract(
     mainJson.abi,
-  process.env.MAIN_CONTRACT_ADDRESS,
+  process.env.DEMETER_CONTRACT_ADDRESS,
 );
 
 const tokenJson = require('../out/BaseToken.json');
+
 const usdContract = this.hmy.contracts.createContract(
     tokenJson.abi,
     process.env.USD_TOKEN_ADDRESS,
@@ -25,7 +26,7 @@ const usdContract = this.hmy.contracts.createContract(
 
 const govContract = this.hmy.contracts.createContract(
     tokenJson.abi,
-    process.env.GOV_TOKEN_ADDRESS,
+    process.env.HRV_TOKEN_ADDRESS,
 );
 
 const btcContract = this.hmy.contracts.createContract(
