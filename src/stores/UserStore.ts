@@ -3,8 +3,9 @@ import { IStores } from 'stores';
 import { statusFetching } from '../constants';
 import {
   getHmyBalance,
-  hmyMethodsLINK,
-  hmyMethodsBUSD,
+  usdTokenMethods,
+  btcTokenMethods,
+  govTokenMethods,
 } from '../blockchain-bridge';
 import { StoreConstructor } from './core/StoreConstructor';
 
@@ -23,11 +24,11 @@ export class UserStoreEx extends StoreConstructor {
   @observable public address: string;
 
   @observable public balance: string = '0';
-  @observable public hmyBUSDBalance: string = '0';
-  @observable public hmyLINKBalance: string = '0';
 
-  @observable public hmyBUSDBalanceManager: number = 0;
-  @observable public hmyLINKBalanceManager: number = 0;
+  @observable public usdBalance: string = '0';
+  @observable public btcBalance: string = '0';
+  @observable public govBalance: string = '0';
+
 
   constructor(stores) {
     super(stores);
@@ -91,28 +92,12 @@ export class UserStoreEx extends StoreConstructor {
         let res = await getHmyBalance(this.address);
         this.balance = res && res.result;
 
-        this.hmyBUSDBalance = await hmyMethodsBUSD.checkHmyBalance(
-          this.address,
-        );
-        this.hmyLINKBalance = await hmyMethodsLINK.checkHmyBalance(
-          this.address,
-        );
+        this.usdBalance = await usdTokenMethods.getBalance(this.address);
+        this.btcBalance = await btcTokenMethods.getBalance(this.address);
+        this.govBalance = await govTokenMethods.getBalance(this.address);
       } catch (e) {
         console.error(e);
       }
-    }
-
-    try {
-      const hmyBUSDBalanceManager = await hmyMethodsBUSD.totalSupply();
-
-      this.hmyBUSDBalanceManager = Number(hmyBUSDBalanceManager);
-
-      const hmyLINKBalanceManager = await hmyMethodsLINK.checkHmyBalance(
-        process.env.HMY_LINK_MANAGER_CONTRACT,
-      );
-      this.hmyLINKBalanceManager = 10000 - Number(hmyLINKBalanceManager);
-    } catch (e) {
-      console.error(e);
     }
   };
 

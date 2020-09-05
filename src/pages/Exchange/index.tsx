@@ -26,14 +26,13 @@ export interface ITokenInfo {
   maxAmount: string;
 }
 
-@inject('user', 'exchange', 'actionModals', 'userMetamask', 'routing')
+@inject('user', 'exchange', 'actionModals', 'routing')
 @observer
 export class Exchange extends React.Component<
   Pick<IStores, 'user'> &
     Pick<IStores, 'exchange'> &
     Pick<IStores, 'routing'> &
-    Pick<IStores, 'actionModals'> &
-    Pick<IStores, 'userMetamask'>
+    Pick<IStores, 'actionModals'>
 > {
   formRef: MobxForm;
 
@@ -82,32 +81,23 @@ export class Exchange extends React.Component<
 
   @computed
   get tokenInfo(): ITokenInfo {
-    const { user, exchange, userMetamask } = this.props;
+    const { user, exchange } = this.props;
 
     switch (exchange.token) {
       case TOKEN.BUSD:
         return {
           label: 'BUSD',
-          maxAmount:
-            exchange.mode === EXCHANGE_MODE.ONE_TO_ETH
-              ? user.hmyBUSDBalance
-              : userMetamask.ethBUSDBalance,
+          maxAmount: '100',
         };
       case TOKEN.LINK:
         return {
           label: 'LINK',
-          maxAmount:
-            exchange.mode === EXCHANGE_MODE.ONE_TO_ETH
-              ? user.hmyLINKBalance
-              : userMetamask.ethLINKBalance,
+          maxAmount: '100',
         };
       default:
         return {
           label: 'BUSD',
-          maxAmount:
-            exchange.mode === EXCHANGE_MODE.ONE_TO_ETH
-              ? user.hmyBUSDBalance
-              : userMetamask.ethBUSDBalance,
+          maxAmount: '100',
         };
     }
   }

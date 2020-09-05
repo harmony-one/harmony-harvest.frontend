@@ -1,4 +1,4 @@
-import { HmyMethods } from './HmyMethods';
+import { HmyMethods, HmyTokenMethods } from './HmyMethods';
 const { Harmony } = require('@harmony-js/core');
 const { ChainID, ChainType } = require('@harmony-js/utils');
 
@@ -11,38 +11,45 @@ export const hmy = new Harmony(
   },
 );
 
-const hmyBUSDJson = require('../out/BUSDImplementation.json');
-const hmyBUSDContract = this.hmy.contracts.createContract(
-  hmyBUSDJson.abi,
-  process.env.HMY_BUSD_CONTRACT,
+const mainJson = require('../out/Demeter.json');
+const mainContract = this.hmy.contracts.createContract(
+    mainJson.abi,
+  process.env.MAIN_CONTRACT_ADDRESS,
 );
 
-const hmyBUSDManagerJson = require('../out/BUSDHmyManager.json');
-let hmyBUSDManagerContract = this.hmy.contracts.createContract(
-  hmyBUSDManagerJson.abi,
-  process.env.HMY_MANAGER_CONTRACT,
+const tokenJson = require('../out/IERC20.json');
+const usdContract = this.hmy.contracts.createContract(
+    tokenJson.abi,
+    process.env.USD_TOKEN_ADDRESS,
 );
 
-const hmyLINKJson = require('../out/LinkToken.json');
-let hmyLINKContract = hmy.contracts.createContract(
-  hmyLINKJson.abi,
-  process.env.HMY_LINK_CONTRACT,
+const govContract = this.hmy.contracts.createContract(
+    tokenJson.abi,
+    process.env.GOV_TOKEN_ADDRESS,
 );
 
-const hmyLINKManagerJson = require('../out/LINKHmyManager.json');
-let hmyLINKManagerContract = hmy.contracts.createContract(
-  hmyLINKManagerJson.abi,
-  process.env.HMY_LINK_MANAGER_CONTRACT,
+const btcContract = this.hmy.contracts.createContract(
+    tokenJson.abi,
+    process.env.BTC_TOKEN_ADDRESS,
 );
 
-export const hmyMethodsBUSD = new HmyMethods({
+export const hmyMethods = new HmyMethods({
   hmy: hmy,
-  hmyTokenContract: hmyBUSDContract,
-  hmyManagerContract: hmyBUSDManagerContract,
+  hmyManagerContract: mainContract,
 });
 
-export const hmyMethodsLINK = new HmyMethods({
-  hmy: hmy,
-  hmyTokenContract: hmyLINKContract,
-  hmyManagerContract: hmyLINKManagerContract,
+export const govTokenMethods = new HmyTokenMethods({
+    hmy: hmy,
+    tokenContract: govContract,
 });
+
+export const usdTokenMethods = new HmyTokenMethods({
+    hmy: hmy,
+    tokenContract: usdContract,
+});
+
+export const btcTokenMethods = new HmyTokenMethods({
+    hmy: hmy,
+    tokenContract: btcContract,
+});
+

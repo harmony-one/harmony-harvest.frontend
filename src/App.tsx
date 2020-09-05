@@ -14,13 +14,13 @@ export const App: React.FC = () => (
       <Switch>
         <Route exact path="/get-tokens" component={MintTokens} />
         <Route exact path="/explorer" component={Explorer} />
-        <Route exact path="/:token" component={EthBridge} />
+        <Route exact path="/" component={EthBridge} />
         <Route
           exact
           path="/:token/operations/:operationId"
           component={EthBridge}
         />
-        <Redirect to="/busd" />
+        <Redirect to="/" />
       </Switch>
     </React.Suspense>
     <ActionModals />

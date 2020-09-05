@@ -12,7 +12,7 @@ import * as styles from '../Exchange/styles.styl';
 import * as services from 'services';
 
 export const MintTokens = observer((props: any) => {
-  const { userMetamask } = useStores();
+  const { user } = useStores();
   const [status, setStatus] = useState<statusFetching>('init');
   const [error, setError] = useState('');
   const [token, setToken] = useState<TOKEN>(TOKEN.BUSD);
@@ -21,8 +21,8 @@ export const MintTokens = observer((props: any) => {
   const isPending = status === 'fetching';
 
   useEffect(() => {
-    setAddress(userMetamask.ethAddress);
-  }, [userMetamask.ethAddress]);
+    setAddress(user.address);
+  }, [user.address]);
 
   let icon = () => <Icon style={{ width: 50 }} glyph="RightArrow" />;
   let description = '';

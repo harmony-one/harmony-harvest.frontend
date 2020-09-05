@@ -41,8 +41,41 @@ const AssetRow = observer<any>(props => {
   );
 });
 
+const BalanceRow = observer<any>(props => {
+  return (
+    <Box
+      className={cn(
+        styles.walletBalancesRow,
+        props.last ? '' : styles.underline,
+      )}
+    >
+      <Box style={{ width: "40%" }}>
+        <Text color={props.selected ? '#00ADE8' : null} bold={false}>
+          {props.asset}
+        </Text>
+      </Box>
+
+      <Box direction="column" align="end" style={{ width: "30%" }}>
+        <Box className={styles.priceColumn}>
+          <Text color={props.selected ? '#00ADE8' : null} bold={true}>
+            {props.value}
+          </Text>
+        </Box>
+      </Box>
+
+      <Box direction="column" align="end" style={{ width: "30%" }}>
+        <Box className={styles.priceColumn}>
+          <Text color={props.selected ? '#00ADE8' : null} bold={true}>
+            {props.valueUSD}
+          </Text>
+        </Box>
+      </Box>
+    </Box>
+  );
+});
+
 export const WalletBalances = observer(() => {
-  const { user, userMetamask, actionModals, exchange } = useStores();
+  const { user, actionModals, exchange } = useStores();
 
   return (
     <Box
@@ -78,29 +111,68 @@ export const WalletBalances = observer(() => {
           </Box>
 
           {user.isAuthorized ? (
-            <>
+            <Box>
               <AssetRow
                 asset="Harmony Address"
                 value={truncateAddressString(user.address)}
+                last={true}
               />
 
-              <AssetRow
+              <Box
+                direction="row"
+                justify="between"
+                gap="20px"
+                margin={{ bottom: 'large', top: 'small' }}
+              >
+                <Box className={styles.rateInfo}>
+                  <b>0%</b>
+                  Current collateralization ratio
+                </Box>
+                <Box className={styles.rateInfo}>
+                  <b>800%</b>
+                  Target collateralization ratio
+                </Box>
+              </Box>
+
+              <Box
+                direction="row"
+                justify="around"
+                className={styles.exchangeRateContainer}
+                margin={{ bottom: 'large' }}
+              >
+                <Box className={styles.exchangeInfo}>1HRV = $5.10 USD</Box>
+                <Box className={styles.exchangeInfo}>ONE = $382.06 USD</Box>
+              </Box>
+
+              <BalanceRow asset="Token" value="Balance" valueUSD="$ USD" />
+
+              <BalanceRow
                 asset="Harmony ONE"
                 value={formatWithTwoDecimals(ones(user.balance))}
+                valueUSD={formatWithTwoDecimals(ones(user.balance))}
               />
 
-              <AssetRow
-                asset="Harmony BUSD"
-                value={formatWithTwoDecimals(user.hmyBUSDBalance)}
+              <BalanceRow
+                asset="Harmony 1HRV"
+                value={formatWithTwoDecimals(user.govBalance)}
+                valueUSD={formatWithTwoDecimals(ones(user.govBalance))}
                 selected={exchange.token === TOKEN.BUSD}
               />
 
-              <AssetRow
-                asset="Harmony LINK"
-                value={formatWithTwoDecimals(user.hmyLINKBalance)}
+              <BalanceRow
+                asset="Harmony hUSD"
+                value={formatWithTwoDecimals(user.usdBalance)}
+                valueUSD={formatWithTwoDecimals(ones(user.usdBalance))}
                 selected={exchange.token === TOKEN.LINK}
               />
-            </>
+
+              <BalanceRow
+                asset="Harmony hBTC"
+                value={formatWithTwoDecimals(user.btcBalance)}
+                valueUSD={formatWithTwoDecimals(ones(user.btcBalance))}
+                selected={exchange.token === TOKEN.LINK}
+              />
+            </Box>
           ) : (
             <Box direction="row" align="baseline" justify="start">
               <Button
@@ -126,53 +198,6 @@ export const WalletBalances = observer(() => {
               {!user.isOneWallet ? (
                 <Error error="ONE Wallet not found" />
               ) : null}
-            </Box>
-          )}
-        </Box>
-
-        <Box direction="column" margin={{ top: 'medium' }}>
-          <Box direction="row" align="center" margin={{ bottom: 'xsmall' }}>
-            <img className={styles.imgToken} src="/eth.svg" />
-            <Title margin={{ right: 'xsmall' }}>Ethereum</Title>
-            <Text margin={{ top: '4px' }}>(Metamask)</Text>
-          </Box>
-
-          {userMetamask.isAuthorized ? (
-            <>
-              <AssetRow
-                asset="ETH Address"
-                value={truncateAddressString(userMetamask.ethAddress)}
-              />
-
-              <AssetRow
-                asset="ETH"
-                value={formatWithSixDecimals(userMetamask.ethBalance)}
-              />
-
-              <AssetRow
-                asset="Ethereum BUSD"
-                value={formatWithTwoDecimals(userMetamask.ethBUSDBalance)}
-                selected={exchange.token === TOKEN.BUSD}
-              />
-
-              <AssetRow
-                asset="Ethereum LINK"
-                value={formatWithTwoDecimals(userMetamask.ethLINKBalance)}
-                selected={exchange.token === TOKEN.LINK}
-                last={true}
-              />
-            </>
-          ) : (
-            <Box direction="row" align="baseline" justify="start">
-              <Button
-                margin={{ vertical: 'medium' }}
-                onClick={() => {
-                  userMetamask.signIn();
-                }}
-              >
-                Connect Metamask
-              </Button>
-              {userMetamask.error ? <Error error={userMetamask.error} /> : null}
             </Box>
           )}
         </Box>

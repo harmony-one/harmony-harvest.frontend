@@ -67,29 +67,17 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
             {/*  <Text>Select token</Text>*/}
             {/*</Box>*/}
 
-            <Box
-              className={cn(
-                styles.itemToken,
-                isGetTokens ? styles.selected : '',
-              )}
-              onClick={() => {
-                routing.push(`/get-tokens`);
-              }}
-            >
-              <Text>Get tokens</Text>
-            </Box>
-
-            <Box
-              className={cn(
-                styles.itemToken,
-                isExplorer ? styles.selected : '',
-              )}
-              onClick={() => {
-                routing.push(`/explorer`);
-              }}
-            >
-              <Text>Explorer</Text>
-            </Box>
+            {/*<Box*/}
+            {/*  className={cn(*/}
+            {/*    styles.itemToken,*/}
+            {/*    isGetTokens ? styles.selected : '',*/}
+            {/*  )}*/}
+            {/*  onClick={() => {*/}
+            {/*    routing.push(`/get-tokens`);*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  <Text>Get tokens</Text>*/}
+            {/*</Box>*/}
 
             <Box
               className={cn(
@@ -100,21 +88,7 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
                 routing.push(`/busd`);
               }}
             >
-              <Text>Bridge</Text>
-            </Box>
-            <Box
-              direction="column"
-              align="center"
-              gap="10px"
-              style={{ width: 190 }}
-              margin={{ left: '50px' }}
-            >
-              <Box direction="row" fill={true} justify="between">
-                Total BUSD locked: <b>{user.hmyBUSDBalanceManager}</b>
-              </Box>
-              <Box direction="row" fill={true} justify="between">
-                Total LINK locked: <b>{user.hmyLINKBalanceManager}</b>
-              </Box>
+              <Text>Home</Text>
             </Box>
           </Box>
         </Box>

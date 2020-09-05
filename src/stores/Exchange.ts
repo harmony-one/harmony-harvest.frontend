@@ -4,13 +4,6 @@ import { statusFetching } from '../constants';
 import { IOperation, EXCHANGE_MODE, STATUS, TOKEN } from './interfaces';
 import * as operationService from 'services';
 
-import {
-  ethMethodsBUSD,
-  hmyMethodsBUSD,
-  ethMethodsLINK,
-  hmyMethodsLINK,
-} from '../blockchain-bridge';
-
 export enum EXCHANGE_STEPS {
   BASE = 'BASE',
   CONFIRMATION = 'CONFIRMATION',
@@ -72,7 +65,7 @@ export class Exchange extends StoreConstructor {
             // this.transaction.oneAddress = this.stores.user.address;
             switch (this.mode) {
               case EXCHANGE_MODE.ETH_TO_ONE:
-                this.transaction.ethAddress = this.stores.userMetamask.ethAddress;
+                // this.transaction.ethAddress = this.stores.userMetamask.ethAddress;
               case EXCHANGE_MODE.ONE_TO_ETH:
                 this.transaction.oneAddress = this.stores.user.address;
             }
@@ -121,11 +114,11 @@ export class Exchange extends StoreConstructor {
   setAddressByMode() {
     if (this.mode === EXCHANGE_MODE.ETH_TO_ONE) {
       this.transaction.oneAddress = this.stores.user.address;
-      this.transaction.ethAddress = this.stores.userMetamask.ethAddress;
+      // this.transaction.ethAddress = this.stores.userMetamask.ethAddress;
     }
 
     if (this.mode === EXCHANGE_MODE.ONE_TO_ETH) {
-      this.transaction.ethAddress = this.stores.userMetamask.ethAddress;
+      // this.transaction.ethAddress = this.stores.userMetamask.ethAddress;
       this.transaction.oneAddress = this.stores.user.address;
     }
   }
@@ -216,65 +209,65 @@ export class Exchange extends StoreConstructor {
         return;
       }
 
-      const confirmCallback = async (transactionHash, actionId) => {
-        this.operation = await operationService.confirmAction({
-          operationId,
-          transactionHash,
-          actionId,
-        });
-      };
+      // const confirmCallback = async (transactionHash, actionId) => {
+      //   this.operation = await operationService.confirmAction({
+      //     operationId,
+      //     transactionHash,
+      //     actionId,
+      //   });
+      // };
 
-      let ethMethods, hmyMethods;
-
-      if (this.token === TOKEN.BUSD) {
-        ethMethods = ethMethodsBUSD;
-        hmyMethods = hmyMethodsBUSD;
-      }
-
-      if (this.token === TOKEN.LINK) {
-        ethMethods = ethMethodsLINK;
-        hmyMethods = hmyMethodsLINK;
-      }
-
-      if (this.mode === EXCHANGE_MODE.ETH_TO_ONE) {
-        const approveEthManger = this.operation.actions[0];
-
-        if (approveEthManger.status === STATUS.WAITING) {
-          await ethMethods.approveEthManger(this.transaction.amount, hash =>
-            confirmCallback(hash, approveEthManger.id),
-          );
-        }
-
-        const lockToken = this.operation.actions[1];
-
-        if (lockToken.status === STATUS.WAITING) {
-          await ethMethods.lockToken(
-            this.transaction.oneAddress,
-            this.transaction.amount,
-            hash => confirmCallback(hash, lockToken.id),
-          );
-        }
-      }
-
-      if (this.mode === EXCHANGE_MODE.ONE_TO_ETH) {
-        const approveHmyManger = this.operation.actions[0];
-
-        if (approveHmyManger.status === STATUS.WAITING) {
-          await hmyMethods.approveHmyManger(this.transaction.amount, hash =>
-            confirmCallback(hash, approveHmyManger.id),
-          );
-        }
-
-        const burnToken = this.operation.actions[1];
-
-        if (burnToken.status === STATUS.WAITING) {
-          await hmyMethods.burnToken(
-            this.transaction.ethAddress,
-            this.transaction.amount,
-            hash => confirmCallback(hash, burnToken.id),
-          );
-        }
-      }
+      // let ethMethods, hmyMethods;
+      //
+      // if (this.token === TOKEN.BUSD) {
+      //   ethMethods = ethMethodsBUSD;
+      //   hmyMethods = hmyMethodsBUSD;
+      // }
+      //
+      // if (this.token === TOKEN.LINK) {
+      //   ethMethods = ethMethodsLINK;
+      //   hmyMethods = hmyMethodsLINK;
+      // }
+      //
+      // if (this.mode === EXCHANGE_MODE.ETH_TO_ONE) {
+      //   const approveEthManger = this.operation.actions[0];
+      //
+      //   if (approveEthManger.status === STATUS.WAITING) {
+      //     await ethMethods.approveEthManger(this.transaction.amount, hash =>
+      //       confirmCallback(hash, approveEthManger.id),
+      //     );
+      //   }
+      //
+      //   const lockToken = this.operation.actions[1];
+      //
+      //   if (lockToken.status === STATUS.WAITING) {
+      //     await ethMethods.lockToken(
+      //       this.transaction.oneAddress,
+      //       this.transaction.amount,
+      //       hash => confirmCallback(hash, lockToken.id),
+      //     );
+      //   }
+      // }
+      //
+      // if (this.mode === EXCHANGE_MODE.ONE_TO_ETH) {
+      //   const approveHmyManger = this.operation.actions[0];
+      //
+      //   if (approveHmyManger.status === STATUS.WAITING) {
+      //     await hmyMethods.approveHmyManger(this.transaction.amount, hash =>
+      //       confirmCallback(hash, approveHmyManger.id),
+      //     );
+      //   }
+      //
+      //   const burnToken = this.operation.actions[1];
+      //
+      //   if (burnToken.status === STATUS.WAITING) {
+      //     await hmyMethods.burnToken(
+      //       this.transaction.ethAddress,
+      //       this.transaction.amount,
+      //       hash => confirmCallback(hash, burnToken.id),
+      //     );
+      //   }
+      // }
 
       return;
     } catch (e) {

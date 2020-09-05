@@ -99,22 +99,10 @@ function getClientEnvironment(publicUrl) {
 
         PRIVATE_KEY: process.env.PRIVATE_KEY,
 
-        ETH_BUSD_CONTRACT: process.env.ETH_BUSD_CONTRACT,
-        ETH_MANAGER_CONTRACT: process.env.ETH_MANAGER_CONTRACT,
-        HMY_BUSD_CONTRACT: process.env.HMY_BUSD_CONTRACT,
-        HMY_MANAGER_CONTRACT: process.env.HMY_MANAGER_CONTRACT,
-
-        ETH_LINK_CONTRACT: process.env.ETH_LINK_CONTRACT,
-        ETH_LINK_MANAGER_CONTRACT: process.env.ETH_LINK_MANAGER_CONTRACT,
-        HMY_LINK_CONTRACT: process.env.HMY_LINK_CONTRACT,
-        HMY_LINK_MANAGER_CONTRACT: process.env.HMY_LINK_MANAGER_CONTRACT,
-
-        ETH_EXPLORER_URL: process.env.ETH_EXPLORER_URL,
-        HMY_EXPLORER_URL: process.env.HMY_EXPLORER_URL,
-
-        ETH_NODE_URL: process.env.ETH_NODE_URL,
-        ETH_GAS_PRICE: process.env.ETH_GAS_PRICE,
-        ETH_GAS_LIMIT: process.env.ETH_GAS_LIMIT,
+        GOV_TOKEN_ADDRESS: process.env.GOV_TOKEN_ADDRESS,
+        USD_TOKEN_ADDRESS: process.env.USD_TOKEN_ADDRESS,
+        BTC_TOKEN_ADDRESS: process.env.BTC_TOKEN_ADDRESS,
+        MAIN_CONTRACT_ADDRESS: process.env.MAIN_CONTRACT_ADDRESS,
 
         HMY_NODE_URL: process.env.HMY_NODE_URL,
         GAS_LIMIT: process.env.GAS_LIMIT,

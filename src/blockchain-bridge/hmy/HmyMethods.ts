@@ -1,23 +1,20 @@
 import { Harmony } from '@harmony-js/core';
 import { Contract } from '@harmony-js/contract';
-import { connectToOneWallet } from './helpers';
+import { connectToOneWallet, ONE } from './helpers';
 
 interface IHmyMethodsInitParams {
   hmy: Harmony;
-  hmyTokenContract: Contract;
   hmyManagerContract: Contract;
   options?: { gasPrice: number; gasLimit: number };
 }
 
 export class HmyMethods {
   private hmy: Harmony;
-  private hmyTokenContract: Contract;
   private hmyManagerContract: Contract;
   private options = { gasPrice: 1000000000, gasLimit: 6721900 };
 
   constructor(params: IHmyMethodsInitParams) {
     this.hmy = params.hmy;
-    this.hmyTokenContract = params.hmyTokenContract;
     this.hmyManagerContract = params.hmyManagerContract;
 
     if (params.options) {
@@ -25,15 +22,16 @@ export class HmyMethods {
     }
   }
 
-  approveHmyManger = (amount, sendTxCallback?) => {
+  public lockToken = (usdToken, amount) => {
     return new Promise(async (resolve, reject) => {
       try {
-        await connectToOneWallet(this.hmyTokenContract.wallet, null, reject);
+        await connectToOneWallet(this.hmyManagerContract.wallet, null, reject);
 
-        const res = await this.hmyTokenContract.methods
-          .approve(this.hmyManagerContract.address, amount)
-          .send(this.options)
-          .on('transactionHash', sendTxCallback);
+        let options = { ...this.options, value: amount + ONE };
+
+        const res = await this.hmyManagerContract.methods
+          .lockToken(usdToken, amount + ONE)
+          .send(options);
 
         resolve(res);
       } catch (e) {
@@ -41,35 +39,51 @@ export class HmyMethods {
       }
     });
   };
+}
 
-  burnToken = async (userAddr, amount, sendTxCallback?) => {
+interface IHmyTokenMethodsInitParams {
+  hmy: Harmony;
+  tokenContract: Contract;
+  options?: { gasPrice: number; gasLimit: number };
+}
+
+export class HmyTokenMethods {
+  private hmy: Harmony;
+  private tokenContract: Contract;
+  private options = { gasPrice: 1000000000, gasLimit: 6721900 };
+
+  constructor(params: IHmyTokenMethodsInitParams) {
+    this.hmy = params.hmy;
+    this.tokenContract = params.tokenContract;
+
+    if (params.options) {
+      this.options = params.options;
+    }
+  }
+
+  public getBalance = async address => {
+    const addrHex = this.hmy.crypto.getAddress(address).checksum;
+
+    const balance = await this.tokenContract.methods
+      .balanceOf(addrHex)
+      .call(this.options);
+
+    return balance;
+  };
+
+  public sendTokens = (receiverAddress, amount) => {
     return new Promise(async (resolve, reject) => {
       try {
-        await connectToOneWallet(this.hmyManagerContract.wallet, null, reject);
+        await connectToOneWallet(this.tokenContract.wallet, null, reject);
 
-        let response = await this.hmyManagerContract.methods
-          .burnToken(amount, userAddr)
-          .send(this.options)
-          .on('transactionHash', sendTxCallback);
+        const res = await this.tokenContract.methods
+          .transfer(receiverAddress, amount + ONE)
+          .send(this.options);
 
-        resolve(response.transaction.id);
+        resolve(res);
       } catch (e) {
         reject(e);
       }
     });
-  };
-
-  checkHmyBalance = async (addr: string) => {
-    const addrHex = this.hmy.crypto.getAddress(addr).checksum;
-
-    return await this.hmyTokenContract.methods
-      .balanceOf(addrHex)
-      .call(this.options);
-  };
-
-  totalSupply = async () => {
-    return await this.hmyTokenContract.methods
-      .totalSupply()
-      .call(this.options);
   };
 }
