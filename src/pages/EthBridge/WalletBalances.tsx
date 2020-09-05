@@ -125,7 +125,7 @@ export const WalletBalances = observer(() => {
                 margin={{ bottom: 'large', top: 'small' }}
               >
                 <Box className={styles.rateInfo}>
-                  <b>0%</b>
+                  <b>{!user.usdBalance ? "0%" : "1000%"}</b>
                   Current collateralization ratio
                 </Box>
                 <Box className={styles.rateInfo}>
