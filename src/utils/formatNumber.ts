@@ -19,7 +19,7 @@ const sixDecimalsFormatter = new Intl.NumberFormat('en-US', {
 
 export function formatWithTwoDecimals(value: number | string) {
   if(!value) {
-    return '';
+    return String(value);
   }
 
   return twoDecimalsFormatter.format(Number(value));

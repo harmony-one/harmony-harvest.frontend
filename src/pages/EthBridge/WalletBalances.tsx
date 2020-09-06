@@ -105,12 +105,12 @@ export const WalletBalances = observer(() => {
     <Box
       direction="column"
       className={styles.walletBalances}
-      margin={{ vertical: 'large' }}
+      margin={{ top: 'large' }}
     >
       {/*<Title>Wallet Info</Title>*/}
 
       <Box className={styles.container}>
-        <Box direction="column" margin={{ bottom: 'large' }}>
+        <Box direction="column" margin={{ bottom: 'small' }}>
           <Box direction="row" justify="between" margin={{ bottom: 'xsmall' }}>
             <Box direction="row" align="center">
               <img className={styles.imgToken} src="/one.svg" />
@@ -148,12 +148,12 @@ export const WalletBalances = observer(() => {
                 gap="20px"
                 margin={{ bottom: 'large', top: 'small' }}
               >
-                <Box className={styles.rateInfo}>
-                  <b>{!hasRatio ? '0%' : '1000%'}</b>
+                <Box className={cn(styles.rateInfo, )}>
+                  <b>{user.collateralizationRatio}%</b>
                   Current collateralization ratio
                 </Box>
                 <Box className={styles.rateInfo}>
-                  <b>800%</b>
+                  <b>{user.normalRatio}%</b>
                   Target collateralization ratio
                 </Box>
               </Box>
@@ -189,13 +189,24 @@ export const WalletBalances = observer(() => {
 
               <BalanceRow
                 icon="/1HRV_Logo.png"
-                asset="1HRV"
+                asset="1HRV Free"
                 value={formatWithTwoDecimals(user.govBalance)}
                 valueUSD={formatWithTwoDecimals(
                   Number(user.govBalance) * user.govInfo.exchangePrice,
                 )}
                 selected={exchange.token === TOKEN.BUSD}
                 address={user.govInfo.address}
+              />
+
+              <BalanceRow
+                  icon="/1HRV_Logo.png"
+                  asset="1HRV Locked"
+                  value={formatWithTwoDecimals(user.lockedBalance)}
+                  valueUSD={formatWithTwoDecimals(
+                      Number(user.lockedBalance) * user.govInfo.exchangePrice,
+                  )}
+                  selected={exchange.token === TOKEN.BUSD}
+                  address={user.govInfo.address}
               />
 
               <BalanceRow

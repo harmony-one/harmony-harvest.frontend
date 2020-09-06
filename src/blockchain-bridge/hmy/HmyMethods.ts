@@ -67,7 +67,7 @@ export class HmyMethods {
         await connectToOneWallet(this.hmyManagerContract.wallet, null, reject);
 
         const res = await this.hmyManagerContract.methods
-          .buyGovToken(this.governanceAddress, amount + ONE)
+          .buyTokenByOne(this.governanceAddress, amount + ONE)
           .send({ ...this.options, value: amount + ONE });
 
         resolve(res);
@@ -101,6 +101,16 @@ export class HmyMethods {
       rate: Number(rate),
       exchangePrice: Number(exchangePrice),
     };
+  };
+
+  public getLockedBalance = async (address: string) => {
+    const addrHex = this.hmy.crypto.getAddress(address).checksum;
+
+    const res = await this.hmyManagerContract.methods
+      .lockedTokensOf(addrHex)
+      .call(this.options);
+
+    return String(res / 1e18);
   };
 
   public getGovernanceAddress = async () => {

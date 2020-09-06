@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import {action, computed, observable} from 'mobx';
 import { IStores } from 'stores';
 import { statusFetching } from '../constants';
 import {
@@ -36,10 +36,20 @@ export class UserStoreEx extends StoreConstructor {
   @observable public usdBalance: string = '0';
   @observable public btcBalance: string = '0';
   @observable public govBalance: string = '0';
+  @observable public lockedBalance: string = '0';
 
   @observable public usdInfo: ISynth;
   @observable public btcInfo: ISynth;
   @observable public govInfo: ISynth;
+
+  normalRatio = 800;
+
+  @computed
+  get collateralizationRatio() {
+    // return Number(this.usdBalance) * this.usdInfo.rate;
+    return 800;
+  }
+
 
   constructor(stores) {
     super(stores);
@@ -107,6 +117,7 @@ export class UserStoreEx extends StoreConstructor {
         this.usdBalance = await usdTokenMethods.getBalance(this.address);
         this.btcBalance = await btcTokenMethods.getBalance(this.address);
         this.govBalance = await govTokenMethods.getBalance(this.address);
+        this.lockedBalance = await hmyMethods.getLockedBalance(this.address);
       } catch (e) {
         console.error(e);
       }
