@@ -11,9 +11,10 @@ import * as styles from '../Exchange/styles.styl';
 import * as stylesLocal from './styles.styl';
 import { govTokenMethods, hmyMethods } from '../../blockchain-bridge';
 import {
-  formatWithSixDecimals,
-  formatWithTwoDecimals,
-  truncateAddressString,
+    addCurrency,
+    formatWithSixDecimals,
+    formatWithTwoDecimals,
+    truncateAddressString,
 } from '../../utils';
 import { AssetRow } from '../Exchange/Details';
 
@@ -192,7 +193,7 @@ export const MintTokens = observer((props: any) => {
             >
               <Box direction="row" justify="between" fill={true}>
                 <Text>Enter 1HRV amount to lock:</Text>
-                <Text>max: {user.govBalance}</Text>
+                <Text>max: {formatWithSixDecimals(user.govBalance)}</Text>
               </Box>
               <NumberInput
                 type="decimal"
@@ -209,7 +210,7 @@ export const MintTokens = observer((props: any) => {
               <AssetRow label="Collateralization rate" value={tokenInfo.rate} />
               <AssetRow
                 label={token + ' exchange price'}
-                value={'$ ' + formatWithTwoDecimals(tokenInfo.exchangePrice)}
+                value={addCurrency(formatWithTwoDecimals(tokenInfo.exchangePrice))}
               />
               <AssetRow
                 label={`${token} will be minted`}

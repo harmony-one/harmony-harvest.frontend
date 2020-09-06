@@ -96,7 +96,7 @@ export class HmyMethods {
       .call(this.options);
 
     return {
-      address,
+      address: this.hmy.crypto.getAddress(address).bech32,
       gov: Boolean(Number(gov)),
       rate: Number(rate),
       exchangePrice: Number(exchangePrice),

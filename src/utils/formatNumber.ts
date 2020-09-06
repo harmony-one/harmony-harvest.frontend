@@ -18,10 +18,22 @@ const sixDecimalsFormatter = new Intl.NumberFormat('en-US', {
 });
 
 export function formatWithTwoDecimals(value: number | string) {
+  if(!value) {
+    return '';
+  }
+
   return twoDecimalsFormatter.format(Number(value));
 }
 
+export function addCurrency(value: string) {
+  return `${value} ONE`
+}
+
 export function formatWithSixDecimals(value: number | string) {
+  if(!value) {
+    return value;
+  }
+
   return sixDecimalsFormatter.format(Number(value));
 }
 

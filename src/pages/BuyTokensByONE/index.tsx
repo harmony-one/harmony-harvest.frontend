@@ -163,7 +163,7 @@ export const BuyTokens = observer((props: any) => {
         <Box direction="column" fill={true} style={{ width: 400 }}>
           <AssetRow
             label={'1HRV exchange price'}
-            value={formatWithTwoDecimals(user.govInfo.exchangePrice) + 'ONE'}
+            value={formatWithTwoDecimals(user.govInfo.exchangePrice) + ' ONE'}
           />
           <AssetRow
             label={`1HRV, will be received`}

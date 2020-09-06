@@ -16,6 +16,7 @@ import {
   usdTokenMethods,
 } from '../../blockchain-bridge';
 import {
+  addCurrency,
   formatWithSixDecimals,
   formatWithTwoDecimals,
   truncateAddressString,
@@ -205,7 +206,7 @@ export const BurnTokens = observer((props: any) => {
                 <Text>Enter {token} amount to lock:</Text>
                 <Text>
                   max:{' '}
-                  {token === TOKEN.BUSD ? user.usdBalance : user.btcBalance}
+                  {formatWithSixDecimals(token === TOKEN.BUSD ? user.usdBalance : user.btcBalance)}
                 </Text>
               </Box>
               <NumberInput
@@ -223,7 +224,9 @@ export const BurnTokens = observer((props: any) => {
               <AssetRow label="Collateralization rate" value={tokenInfo.rate} />
               <AssetRow
                 label={token + ' exchange price'}
-                value={'$ ' + formatWithTwoDecimals(tokenInfo.exchangePrice)}
+                value={addCurrency(
+                  formatWithTwoDecimals(tokenInfo.exchangePrice),
+                )}
               />
               <AssetRow
                 label={`1HRV will be unlocked`}

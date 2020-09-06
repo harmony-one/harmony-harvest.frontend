@@ -6,6 +6,7 @@ import { Error } from 'ui';
 import cn from 'classnames';
 import * as styles from './wallet-balances.styl';
 import {
+  addCurrency,
   formatWithSixDecimals,
   formatWithTwoDecimals,
   ones,
@@ -42,6 +43,18 @@ const AssetRow = observer<any>(props => {
 });
 
 const BalanceRow = observer<any>(props => {
+  const Address = ({ children }) =>
+    props.address ? (
+      <a
+        href={process.env.HMY_EXPLORER_URL + '/address/' + props.address}
+        target="_blank"
+      >
+        {children}
+      </a>
+    ) : (
+      <>{children}</>
+    );
+
   return (
     <Box
       className={cn(
@@ -50,9 +63,14 @@ const BalanceRow = observer<any>(props => {
       )}
     >
       <Box style={{ width: '40%' }}>
-        <Text color={props.selected ? '#00ADE8' : null} bold={false}>
-          {props.asset}
-        </Text>
+        <Address>
+          <Box direction="row">
+            <img className={styles.imgToken} src={props.icon} />
+            <Text color={props.selected ? '#00ADE8' : null} bold={false}>
+              {props.asset}
+            </Text>
+          </Box>
+        </Address>
       </Box>
 
       <Box direction="column" align="end" style={{ width: '30%' }}>
@@ -81,7 +99,7 @@ export const WalletBalances = observer(() => {
     return null;
   }
 
-  const hasRatio = Boolean(Number(user.usdBalance) || Number(user.btcBalance))
+  const hasRatio = Boolean(Number(user.usdBalance) || Number(user.btcBalance));
 
   return (
     <Box
@@ -147,48 +165,59 @@ export const WalletBalances = observer(() => {
                 margin={{ bottom: 'large' }}
               >
                 <Box className={styles.exchangeInfo}>
-                  1HRV = ${formatWithTwoDecimals(user.govInfo.exchangePrice)}{' '}
-                  ONE
+                  1HRV ={' '}
+                  {addCurrency(
+                    formatWithTwoDecimals(user.govInfo.exchangePrice),
+                  )}
                 </Box>
                 <Box className={styles.exchangeInfo}>
-                  sUSD = ${formatWithTwoDecimals(user.usdInfo.exchangePrice)}{' '}
-                  ONE
+                  sUSD ={' '}
+                  {addCurrency(
+                    formatWithTwoDecimals(user.usdInfo.exchangePrice),
+                  )}
                 </Box>
               </Box>
 
-              <BalanceRow asset="Token" value="Balance" valueUSD="$ USD" />
+              <BalanceRow asset="Token" value="Balance" valueUSD="ONE" />
 
               <BalanceRow
-                asset="Harmony ONE"
+                icon="/one.svg"
+                asset="ONE"
                 value={formatWithTwoDecimals(ones(user.balance))}
                 valueUSD={formatWithTwoDecimals(ones(user.balance))}
               />
 
               <BalanceRow
-                asset="Harmony 1HRV"
+                icon="/1HRV_Logo.png"
+                asset="1HRV"
                 value={formatWithTwoDecimals(user.govBalance)}
                 valueUSD={formatWithTwoDecimals(
                   Number(user.govBalance) * user.govInfo.exchangePrice,
                 )}
                 selected={exchange.token === TOKEN.BUSD}
+                address={user.govInfo.address}
               />
 
               <BalanceRow
-                asset="Harmony hUSD"
+                icon="/hUSD_Logo.png"
+                asset="hUSD"
                 value={formatWithTwoDecimals(user.usdBalance)}
                 valueUSD={formatWithTwoDecimals(
                   Number(user.usdBalance) * user.usdInfo.exchangePrice,
                 )}
                 selected={exchange.token === TOKEN.LINK}
+                address={user.usdInfo.address}
               />
 
               <BalanceRow
-                asset="Harmony hBTC"
+                icon="/hBTC_Logo.png"
+                asset="hBTC"
                 value={formatWithSixDecimals(user.btcBalance)}
                 valueUSD={formatWithTwoDecimals(
                   Number(user.btcBalance) * user.btcInfo.exchangePrice,
                 )}
                 selected={exchange.token === TOKEN.LINK}
+                address={user.btcInfo.address}
               />
             </Box>
           ) : (
