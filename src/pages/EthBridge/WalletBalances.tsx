@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box } from 'grommet';
 import { observer } from 'mobx-react-lite';
 import { Button, Icon, Text, Title } from 'components/Base';
-import { Error } from 'ui';
+import { Error, Spinner } from 'ui';
 import cn from 'classnames';
 import * as styles from './wallet-balances.styl';
 import {
@@ -95,8 +95,18 @@ const BalanceRow = observer<any>(props => {
 export const WalletBalances = observer(() => {
   const { user, actionModals, exchange } = useStores();
 
-  if (!user.govInfo || !user.usdInfo || !user.btcInfo) {
-    return null;
+  if (user.isAuthorized && !user.isInit) {
+    return (
+      <Box
+        direction="column"
+        className={styles.walletBalances}
+        margin={{ top: 'large' }}
+      >
+        <Box className={styles.container}>
+          <Spinner />;
+        </Box>
+      </Box>
+    );
   }
 
   const hasRatio = Boolean(Number(user.usdBalance) || Number(user.btcBalance));
@@ -148,8 +158,8 @@ export const WalletBalances = observer(() => {
                 gap="20px"
                 margin={{ bottom: 'large', top: 'small' }}
               >
-                <Box className={cn(styles.rateInfo, )}>
-                  <b>{user.collateralizationRatio}%</b>
+                <Box className={cn(styles.rateInfo)}>
+                  <b>{user.isBalancesInit ? user.collateralizationRatio : '--'}%</b>
                   Current collateralization ratio
                 </Box>
                 <Box className={styles.rateInfo}>
@@ -199,14 +209,14 @@ export const WalletBalances = observer(() => {
               />
 
               <BalanceRow
-                  icon="/1HRV_Logo.png"
-                  asset="1HRV Locked"
-                  value={formatWithTwoDecimals(user.lockedBalance)}
-                  valueUSD={formatWithTwoDecimals(
-                      Number(user.lockedBalance) * user.govInfo.exchangePrice,
-                  )}
-                  selected={exchange.token === TOKEN.BUSD}
-                  address={user.govInfo.address}
+                icon="/1HRV_Logo.png"
+                asset="1HRV Locked"
+                value={formatWithTwoDecimals(user.lockedBalance)}
+                valueUSD={formatWithTwoDecimals(
+                  Number(user.lockedBalance) * user.govInfo.exchangePrice,
+                )}
+                selected={exchange.token === TOKEN.BUSD}
+                address={user.govInfo.address}
               />
 
               <BalanceRow

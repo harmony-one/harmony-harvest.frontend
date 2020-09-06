@@ -1,4 +1,4 @@
-import {action, computed, observable} from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { IStores } from 'stores';
 import { statusFetching } from '../constants';
 import {
@@ -6,7 +6,7 @@ import {
   usdTokenMethods,
   btcTokenMethods,
   govTokenMethods,
-    hmyMethods
+  hmyMethods,
 } from '../blockchain-bridge';
 import { StoreConstructor } from './core/StoreConstructor';
 
@@ -42,14 +42,34 @@ export class UserStoreEx extends StoreConstructor {
   @observable public btcInfo: ISynth;
   @observable public govInfo: ISynth;
 
-  normalRatio = 800;
+  @observable isInit = false;
+  @observable isBalancesInit = false;
+
+  normalRatio = 1000;
 
   @computed
   get collateralizationRatio() {
-    // return Number(this.usdBalance) * this.usdInfo.rate;
-    return 800;
-  }
+    if (
+      !this.isInit ||
+      !this.isBalancesInit ||
+      !this.lockedBalance ||
+      !this.govInfo
+    ) {
+      return 0;
+    }
 
+    const totalLocked = Number(this.lockedBalance) * this.govInfo.exchangePrice;
+
+    const totalAsset =
+      Number(this.btcBalance) * this.btcInfo.exchangePrice +
+      Number(this.usdBalance) * this.usdInfo.exchangePrice;
+
+    if (!totalAsset) {
+      return 0;
+    }
+
+    return Math.round(totalLocked / totalAsset) * 100;
+  }
 
   constructor(stores) {
     super(stores);
@@ -100,6 +120,7 @@ export class UserStoreEx extends StoreConstructor {
         this.syncLocalStorage();
 
         this.getOneBalance();
+        this.getSynthsInfo();
 
         return Promise.resolve();
       })
@@ -121,17 +142,21 @@ export class UserStoreEx extends StoreConstructor {
       } catch (e) {
         console.error(e);
       }
+
+      this.isBalancesInit = true;
     }
   };
 
   @action public getSynthsInfo = async () => {
-      try {
-        this.usdInfo = await hmyMethods.getSynth(process.env.USD_TOKEN_ADDRESS);
-        this.btcInfo = await hmyMethods.getSynth(process.env.BTC_TOKEN_ADDRESS);
-        this.govInfo = await hmyMethods.getSynth(process.env.HRV_TOKEN_ADDRESS);
-      } catch (e) {
-        console.error(e);
-      }
+    try {
+      this.usdInfo = await hmyMethods.getSynth(process.env.USD_TOKEN_ADDRESS);
+      this.btcInfo = await hmyMethods.getSynth(process.env.BTC_TOKEN_ADDRESS);
+      this.govInfo = await hmyMethods.getSynth(process.env.HRV_TOKEN_ADDRESS);
+
+      this.isInit = true;
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   @action public getOneBalance = async () => {
