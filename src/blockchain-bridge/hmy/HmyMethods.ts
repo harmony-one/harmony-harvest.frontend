@@ -61,10 +61,10 @@ export class HmyMethods {
     });
   };
 
-  public unlockToken = (usdToken, govToken, amount) => {
+  public unlockToken = (usdToken, amount) => {
     return this.createAction(() =>
       this.hmyManagerContract.methods
-        .unlockToken(usdToken, govToken, amount + ONE)
+        .unlockToken(usdToken, this.governanceAddress, amount + ONE)
         .send(this.options),
     );
   };

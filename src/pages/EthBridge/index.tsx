@@ -10,6 +10,7 @@ import { WalletBalances } from './WalletBalances';
 import { useEffect, useState } from 'react';
 import { MintTokens } from '../MintTokens';
 import cn from 'classnames';
+import {BurnTokens} from "../BurnTokens";
 
 enum ACTION_MODE {
   MINT = 'MINT',
@@ -43,6 +44,8 @@ export const EthBridge = observer((props: any) => {
     switch (mode) {
       case ACTION_MODE.MINT:
         return <MintTokens onCancel={() => setMode(ACTION_MODE.NONE)} />;
+      case ACTION_MODE.BURN:
+        return <BurnTokens onCancel={() => setMode(ACTION_MODE.NONE)} />;
       default:
         return <MintTokens onCancel={() => setMode(ACTION_MODE.NONE)} />;
     }
@@ -87,7 +90,10 @@ export const EthBridge = observer((props: any) => {
                     <Text>Mint Synths by 1HRV</Text>
                   </Box>
 
-                  <Box className={styles.actionItem}>
+                  <Box
+                    className={styles.actionItem}
+                    onClick={() => setMode(ACTION_MODE.BURN)}
+                  >
                     <img src="/burn.svg" />
                     <Title>BURN</Title>
                     <Text>Burn Synths to unlock 1HRV</Text>
@@ -106,7 +112,9 @@ export const EthBridge = observer((props: any) => {
                   </Box>
                 </Box>
               </Box>
-            ) : actionModeRender()}
+            ) : (
+              actionModeRender()
+            )}
 
             {/*<Box*/}
             {/*  direction="row"*/}
