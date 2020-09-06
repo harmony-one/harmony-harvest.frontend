@@ -150,6 +150,9 @@ export const BuyTokens = observer((props: any) => {
         <Box direction="column" align="center" gap="5px">
           <Text>Enter ONEs amount:</Text>
           <NumberInput
+            type="decimal"
+            precision={6}
+            delimiter="."
             disabled={isPending}
             style={{ width: 400 }}
             value={address}

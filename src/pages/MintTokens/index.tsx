@@ -10,7 +10,11 @@ import { statusFetching } from '../../constants';
 import * as styles from '../Exchange/styles.styl';
 import * as stylesLocal from './styles.styl';
 import { govTokenMethods, hmyMethods } from '../../blockchain-bridge';
-import {formatWithSixDecimals, formatWithTwoDecimals, truncateAddressString} from '../../utils';
+import {
+  formatWithSixDecimals,
+  formatWithTwoDecimals,
+  truncateAddressString,
+} from '../../utils';
 import { AssetRow } from '../Exchange/Details';
 
 export const MintTokens = observer((props: any) => {
@@ -193,6 +197,7 @@ export const MintTokens = observer((props: any) => {
               <NumberInput
                 type="decimal"
                 precision={6}
+                delimiter="."
                 disabled={isPending}
                 style={{ width: 400 }}
                 value={amount}
@@ -203,8 +208,8 @@ export const MintTokens = observer((props: any) => {
             <Box direction="column" fill={true} style={{ width: 400 }}>
               <AssetRow label="Collateralization rate" value={tokenInfo.rate} />
               <AssetRow
-                  label={token + " exchange price"}
-                  value={'$ ' + formatWithTwoDecimals(tokenInfo.exchangePrice)}
+                label={token + ' exchange price'}
+                value={'$ ' + formatWithTwoDecimals(tokenInfo.exchangePrice)}
               />
               <AssetRow
                 label={`${token} will be minted`}

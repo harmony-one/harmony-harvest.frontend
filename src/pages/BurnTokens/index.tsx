@@ -211,6 +211,7 @@ export const BurnTokens = observer((props: any) => {
               <NumberInput
                 type="decimal"
                 precision={6}
+                delimiter="."
                 disabled={isPending}
                 style={{ width: 400 }}
                 value={amount}

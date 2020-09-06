@@ -184,7 +184,7 @@ export const WalletBalances = observer(() => {
 
               <BalanceRow
                 asset="Harmony hBTC"
-                value={formatWithTwoDecimals(user.btcBalance)}
+                value={formatWithSixDecimals(user.btcBalance)}
                 valueUSD={formatWithTwoDecimals(
                   Number(user.btcBalance) * user.btcInfo.exchangePrice,
                 )}
