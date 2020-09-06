@@ -1,8 +1,12 @@
 import { Harmony } from '@harmony-js/core';
 import { Contract } from '@harmony-js/contract';
 import { connectToOneWallet } from './helpers';
+import BigNumber from 'bignumber.js';
 
-const ONE = '000000000000000000';
+const toONE = value => new BigNumber(parseFloat(value) * 1e18).toFixed();
+
+// @ts-ignore
+window.BigNumber = BigNumber;
 
 interface IHmyMethodsInitParams {
   hmy: Harmony;
@@ -51,7 +55,7 @@ export class HmyMethods {
         // console.log(111, usdToken, amount)
 
         const res = await this.hmyManagerContract.methods
-          .lockToken(usdToken, amount + ONE)
+          .lockToken(usdToken, toONE(amount))
           .send(this.options);
 
         resolve(res);
@@ -67,8 +71,8 @@ export class HmyMethods {
         await connectToOneWallet(this.hmyManagerContract.wallet, null, reject);
 
         const res = await this.hmyManagerContract.methods
-          .buyTokenByOne(this.governanceAddress, amount + ONE)
-          .send({ ...this.options, value: amount + ONE });
+          .buyTokenByOne(this.governanceAddress, toONE(amount))
+          .send({ ...this.options, value: toONE(amount) });
 
         resolve(res);
       } catch (e) {
@@ -80,7 +84,7 @@ export class HmyMethods {
   public unlockToken = (usdToken, amount) => {
     return this.createAction(() =>
       this.hmyManagerContract.methods
-        .unlockToken(usdToken, this.governanceAddress, amount + ONE)
+        .unlockToken(usdToken, this.governanceAddress, toONE(amount))
         .send(this.options),
     );
   };
@@ -156,7 +160,7 @@ export class HmyTokenMethods {
         await connectToOneWallet(this.tokenContract.wallet, null, reject);
 
         const res = await this.tokenContract.methods
-          .transfer(receiverAddress, amount + ONE)
+          .transfer(receiverAddress, toONE(amount))
           .send(this.options);
 
         resolve(res);
@@ -172,7 +176,7 @@ export class HmyTokenMethods {
         await connectToOneWallet(this.tokenContract.wallet, null, reject);
 
         let res = await this.tokenContract.methods
-          .approve(demeterAddr, amount + ONE)
+          .approve(demeterAddr, toONE(amount))
           .send(this.options);
 
         resolve(res);

@@ -128,18 +128,20 @@ export const WalletBalances = observer(() => {
               <Text margin={{ top: '4px' }}>(ONE Wallet)</Text>
             </Box>
             {user.isAuthorized && (
-              <Box
-                onClick={() => {
-                  user.signOut();
-                }}
-                margin={{ left: 'medium' }}
-              >
-                <Icon
-                  glyph="Logout"
-                  size="24px"
-                  style={{ opacity: 0.5 }}
-                  color="BlackTxt"
-                />
+              <Box direction="row">
+                <Box
+                  onClick={() => {
+                    user.signOut();
+                  }}
+                  margin={{ left: 'medium' }}
+                >
+                  <Icon
+                    glyph="Logout"
+                    size="24px"
+                    style={{ opacity: 0.5 }}
+                    color="BlackTxt"
+                  />
+                </Box>
               </Box>
             )}
           </Box>
@@ -158,8 +160,17 @@ export const WalletBalances = observer(() => {
                 gap="20px"
                 margin={{ bottom: 'large', top: 'small' }}
               >
-                <Box className={cn(styles.rateInfo)}>
-                  <b>{user.isBalancesInit ? user.collateralizationRatio : '--'}%</b>
+                <Box
+                  className={cn(
+                    styles.rateInfo,
+                      user.normalRatio - user.collateralizationRatio > 100
+                      ? styles.low
+                      : '',
+                  )}
+                >
+                  <b>
+                    {user.isBalancesInit ? user.collateralizationRatio : '--'}%
+                  </b>
                   Current collateralization ratio
                 </Box>
                 <Box className={styles.rateInfo}>
@@ -181,7 +192,7 @@ export const WalletBalances = observer(() => {
                   )}
                 </Box>
                 <Box className={styles.exchangeInfo}>
-                  sUSD ={' '}
+                  hUSD ={' '}
                   {addCurrency(
                     formatWithTwoDecimals(user.usdInfo.exchangePrice),
                   )}

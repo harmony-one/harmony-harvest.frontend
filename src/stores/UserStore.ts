@@ -38,6 +38,8 @@ export class UserStoreEx extends StoreConstructor {
   @observable public govBalance: string = '0';
   @observable public lockedBalance: string = '0';
 
+  @observable public contractBalance: string = '0';
+
   @observable public usdInfo: ISynth;
   @observable public btcInfo: ISynth;
   @observable public govInfo: ISynth;
@@ -85,6 +87,7 @@ export class UserStoreEx extends StoreConstructor {
     }, 3000);
 
     setInterval(() => this.getBalances(), 3 * 1000);
+    setInterval(() => this.getSynthsInfo(), 5 * 1000);
 
     // @ts-ignore
     this.isOneWallet = window.onewallet && window.onewallet.isOneWallet;
@@ -106,6 +109,17 @@ export class UserStoreEx extends StoreConstructor {
       this.getSynthsInfo();
     }
   }
+
+  @observable reloadStatus = 'init';
+
+  @action public reload = async () => {
+    this.reloadStatus = 'fetching';
+
+    await this.getSynthsInfo();
+    await this.getBalances();
+
+    this.reloadStatus = 'success';
+  };
 
   @action public signIn() {
     return this.onewallet
@@ -145,6 +159,10 @@ export class UserStoreEx extends StoreConstructor {
 
       this.isBalancesInit = true;
     }
+
+    this.contractBalance = await govTokenMethods.getBalance(
+        process.env.DEMETER_CONTRACT_ADDRESS,
+    );
   };
 
   @action public getSynthsInfo = async () => {

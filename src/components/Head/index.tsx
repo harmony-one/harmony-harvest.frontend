@@ -8,6 +8,7 @@ import { Title } from '../Base/components/Title';
 import { useStores } from '../../stores';
 import * as styles from './styles.styl';
 import cn from 'classnames';
+import { formatWithSixDecimals, formatWithTwoDecimals } from '../../utils';
 
 const MainLogo = styled.img`
   width: auto;
@@ -66,6 +67,11 @@ export const Head: React.FC<IStyledChildrenProps<BoxProps>> = withTheme(
             {/*<Box>*/}
             {/*  <Text>Select token</Text>*/}
             {/*</Box>*/}
+            <Box margin={{ right: 'medium' }}>
+              <Text>
+                  Total 1HRV locked: <b>{formatWithTwoDecimals(user.contractBalance)}</b>
+              </Text>
+            </Box>
 
             {/*<Box*/}
             {/*  className={cn(*/}
