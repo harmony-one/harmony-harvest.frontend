@@ -10,7 +10,7 @@ import { statusFetching } from '../../constants';
 import * as styles from '../Exchange/styles.styl';
 import * as stylesLocal from './styles.styl';
 import { govTokenMethods, hmyMethods } from '../../blockchain-bridge';
-import { formatWithTwoDecimals, truncateAddressString } from '../../utils';
+import {formatWithSixDecimals, formatWithTwoDecimals, truncateAddressString} from '../../utils';
 import { AssetRow } from '../Exchange/Details';
 
 export const MintTokens = observer((props: any) => {
@@ -180,21 +180,6 @@ export const MintTokens = observer((props: any) => {
 
         {status !== 'fetching' && status !== 'success' ? (
           <Box direction="column" gap="30px" align="center">
-            <Box direction="column" fill={true} style={{ width: 400 }}>
-              <AssetRow label="Minted token" value={token} />
-              <AssetRow label="Collateralization rate" value={tokenInfo.rate} />
-              <AssetRow
-                label="Exchange price"
-                value={'$ ' + formatWithTwoDecimals(tokenInfo.exchangePrice)}
-              />
-              {/*<AssetRow*/}
-              {/*  label="Token address"*/}
-              {/*  value={truncateAddressString(tokenInfo.address)}*/}
-              {/*  address={true}*/}
-              {/*  link={tokenInfo.address}*/}
-              {/*/>*/}
-            </Box>
-
             <Box
               direction="column"
               align="start"
@@ -206,6 +191,8 @@ export const MintTokens = observer((props: any) => {
                 <Text>max: {user.govBalance}</Text>
               </Box>
               <NumberInput
+                type="decimal"
+                precision={6}
                 disabled={isPending}
                 style={{ width: 400 }}
                 value={amount}
@@ -214,9 +201,14 @@ export const MintTokens = observer((props: any) => {
             </Box>
 
             <Box direction="column" fill={true} style={{ width: 400 }}>
+              <AssetRow label="Collateralization rate" value={tokenInfo.rate} />
+              <AssetRow
+                  label={token + " exchange price"}
+                  value={'$ ' + formatWithTwoDecimals(tokenInfo.exchangePrice)}
+              />
               <AssetRow
                 label={`${token} will be minted`}
-                value={formatWithTwoDecimals(willBeMinted)}
+                value={formatWithSixDecimals(willBeMinted) + ' ' + token}
               />
               <AssetRow label="Harmony network fee" value="0.006721 ONE" />
             </Box>

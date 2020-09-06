@@ -49,13 +49,13 @@ const BalanceRow = observer<any>(props => {
         props.last ? '' : styles.underline,
       )}
     >
-      <Box style={{ width: "40%" }}>
+      <Box style={{ width: '40%' }}>
         <Text color={props.selected ? '#00ADE8' : null} bold={false}>
           {props.asset}
         </Text>
       </Box>
 
-      <Box direction="column" align="end" style={{ width: "30%" }}>
+      <Box direction="column" align="end" style={{ width: '30%' }}>
         <Box className={styles.priceColumn}>
           <Text color={props.selected ? '#00ADE8' : null} bold={true}>
             {props.value}
@@ -63,7 +63,7 @@ const BalanceRow = observer<any>(props => {
         </Box>
       </Box>
 
-      <Box direction="column" align="end" style={{ width: "30%" }}>
+      <Box direction="column" align="end" style={{ width: '30%' }}>
         <Box className={styles.priceColumn}>
           <Text color={props.selected ? '#00ADE8' : null} bold={true}>
             {props.valueUSD}
@@ -76,6 +76,12 @@ const BalanceRow = observer<any>(props => {
 
 export const WalletBalances = observer(() => {
   const { user, actionModals, exchange } = useStores();
+
+  if (!user.govInfo || !user.usdInfo || !user.btcInfo) {
+    return null;
+  }
+
+  const hasRatio = Boolean(Number(user.usdBalance) || Number(user.btcBalance))
 
   return (
     <Box
@@ -125,7 +131,7 @@ export const WalletBalances = observer(() => {
                 margin={{ bottom: 'large', top: 'small' }}
               >
                 <Box className={styles.rateInfo}>
-                  <b>{!user.usdBalance ? "0%" : "1000%"}</b>
+                  <b>{!hasRatio ? '0%' : '1000%'}</b>
                   Current collateralization ratio
                 </Box>
                 <Box className={styles.rateInfo}>
@@ -140,8 +146,14 @@ export const WalletBalances = observer(() => {
                 className={styles.exchangeRateContainer}
                 margin={{ bottom: 'large' }}
               >
-                <Box className={styles.exchangeInfo}>1HRV = $5.10 USD</Box>
-                <Box className={styles.exchangeInfo}>ONE = $382.06 USD</Box>
+                <Box className={styles.exchangeInfo}>
+                  1HRV = ${formatWithTwoDecimals(user.govInfo.exchangePrice)}{' '}
+                  USD
+                </Box>
+                <Box className={styles.exchangeInfo}>
+                  sUSD = ${formatWithTwoDecimals(user.usdInfo.exchangePrice)}{' '}
+                  USD
+                </Box>
               </Box>
 
               <BalanceRow asset="Token" value="Balance" valueUSD="$ USD" />
@@ -155,21 +167,27 @@ export const WalletBalances = observer(() => {
               <BalanceRow
                 asset="Harmony 1HRV"
                 value={formatWithTwoDecimals(user.govBalance)}
-                valueUSD={formatWithTwoDecimals(ones(user.govBalance))}
+                valueUSD={formatWithTwoDecimals(
+                  Number(user.govBalance) * user.govInfo.exchangePrice,
+                )}
                 selected={exchange.token === TOKEN.BUSD}
               />
 
               <BalanceRow
                 asset="Harmony hUSD"
                 value={formatWithTwoDecimals(user.usdBalance)}
-                valueUSD={formatWithTwoDecimals(ones(user.usdBalance))}
+                valueUSD={formatWithTwoDecimals(
+                  Number(user.usdBalance) * user.usdInfo.exchangePrice,
+                )}
                 selected={exchange.token === TOKEN.LINK}
               />
 
               <BalanceRow
                 asset="Harmony hBTC"
                 value={formatWithTwoDecimals(user.btcBalance)}
-                valueUSD={formatWithTwoDecimals(ones(user.btcBalance))}
+                valueUSD={formatWithTwoDecimals(
+                  Number(user.btcBalance) * user.btcInfo.exchangePrice,
+                )}
                 selected={exchange.token === TOKEN.LINK}
               />
             </Box>

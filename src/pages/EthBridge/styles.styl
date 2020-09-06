@@ -59,6 +59,24 @@
     transform scale(1.04)
   }
 
+  &.disabled {
+    opacity 0.8
+    cursor auto
+
+    div {
+      color #dedede !important
+    }
+
+    &:hover {
+      border none
+      transform scale(1)
+    }
+
+    img {
+      opacity 0.2
+    }
+  }
+
   img {
     // max-width 50px
     max-height 100px

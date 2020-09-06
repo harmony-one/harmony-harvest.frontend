@@ -9,6 +9,7 @@ import { Button, Text, Title } from 'components/Base';
 import { WalletBalances } from './WalletBalances';
 import { useEffect, useState } from 'react';
 import { MintTokens } from '../MintTokens';
+import cn from 'classnames';
 
 enum ACTION_MODE {
   MINT = 'MINT',
@@ -92,13 +93,13 @@ export const EthBridge = observer((props: any) => {
                     <Text>Burn Synths to unlock 1HRV</Text>
                   </Box>
 
-                  <Box className={styles.actionItem}>
+                  <Box className={cn(styles.actionItem, styles.disabled)}>
                     <img src="/transfer.svg" />
                     <Title>TRANSFER</Title>
                     <Text>Transfer 1HRV or Synths</Text>
                   </Box>
 
-                  <Box className={styles.actionItem}>
+                  <Box className={cn(styles.actionItem, styles.disabled)}>
                     <img src="/uniswap.webp" />
                     <Title>UNISWAP</Title>
                     <Text>Get 1HRV from Uniswap</Text>
