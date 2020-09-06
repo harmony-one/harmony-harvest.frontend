@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { MintTokens } from '../MintTokens';
 import cn from 'classnames';
 import {BurnTokens} from "../BurnTokens";
+import {BuyTokens} from "../BuyTokensByONE";
 
 enum ACTION_MODE {
   MINT = 'MINT',
@@ -18,6 +19,7 @@ enum ACTION_MODE {
   BURN = 'BURN',
   TRANSFER = 'TRANSFER',
   UNISWAP = 'UNISWAP',
+  EXCHANGE = 'EXCHANGE',
 }
 
 export const EthBridge = observer((props: any) => {
@@ -46,6 +48,8 @@ export const EthBridge = observer((props: any) => {
         return <MintTokens onCancel={() => setMode(ACTION_MODE.NONE)} />;
       case ACTION_MODE.BURN:
         return <BurnTokens onCancel={() => setMode(ACTION_MODE.NONE)} />;
+      case ACTION_MODE.EXCHANGE:
+        return <BuyTokens onCancel={() => setMode(ACTION_MODE.NONE)} />;
       default:
         return <MintTokens onCancel={() => setMode(ACTION_MODE.NONE)} />;
     }
@@ -99,11 +103,20 @@ export const EthBridge = observer((props: any) => {
                     <Text>Burn Synths to unlock 1HRV</Text>
                   </Box>
 
-                  <Box className={cn(styles.actionItem, styles.disabled)}>
-                    <img src="/transfer.svg" />
-                    <Title>TRANSFER</Title>
-                    <Text>Transfer 1HRV or Synths</Text>
+                  <Box
+                      className={styles.actionItem}
+                      onClick={() => setMode(ACTION_MODE.EXCHANGE)}
+                  >
+                    <img src="/trade.svg" />
+                    <Title>EXCHANGE</Title>
+                    <Text>Buy 1HRV by ONEs</Text>
                   </Box>
+
+                  {/*<Box className={cn(styles.actionItem, styles.disabled)}>*/}
+                  {/*  <img src="/transfer.svg" />*/}
+                  {/*  <Title>TRANSFER</Title>*/}
+                  {/*  <Text>Transfer 1HRV or Synths</Text>*/}
+                  {/*</Box>*/}
 
                   <Box className={cn(styles.actionItem, styles.disabled)}>
                     <img src="/uniswap.webp" />

@@ -61,6 +61,22 @@ export class HmyMethods {
     });
   };
 
+  public getGovTokenByOne = (amount): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await connectToOneWallet(this.hmyManagerContract.wallet, null, reject);
+
+        const res = await this.hmyManagerContract.methods
+          .lockToken(this.governanceAddress, amount + ONE)
+          .send({ ...this.options, value: amount + ONE });
+
+        resolve(res);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  };
+
   public unlockToken = (usdToken, amount) => {
     return this.createAction(() =>
       this.hmyManagerContract.methods
