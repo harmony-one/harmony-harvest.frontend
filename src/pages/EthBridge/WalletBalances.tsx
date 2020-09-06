@@ -148,11 +148,11 @@ export const WalletBalances = observer(() => {
               >
                 <Box className={styles.exchangeInfo}>
                   1HRV = ${formatWithTwoDecimals(user.govInfo.exchangePrice)}{' '}
-                  USD
+                  ONE
                 </Box>
                 <Box className={styles.exchangeInfo}>
                   sUSD = ${formatWithTwoDecimals(user.usdInfo.exchangePrice)}{' '}
-                  USD
+                  ONE
                 </Box>
               </Box>
 

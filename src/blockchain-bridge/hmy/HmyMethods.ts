@@ -67,7 +67,7 @@ export class HmyMethods {
         await connectToOneWallet(this.hmyManagerContract.wallet, null, reject);
 
         const res = await this.hmyManagerContract.methods
-          .lockToken(this.governanceAddress, amount + ONE)
+          .buyGovToken(this.governanceAddress, amount + ONE)
           .send({ ...this.options, value: amount + ONE });
 
         resolve(res);
